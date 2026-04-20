@@ -1,167 +1,179 @@
-// ignore_for_file: avoid_print
-
 /// Benchmark tests for SolarTermKit.
 ///
 /// Run with: dart run benchmark/solar_term_benchmark.dart
 library;
 
-import 'package:solar_term_kit/solar_term_kit.dart';
+import 'package:SolarTermKit/SolarTermKit.dart';
+import 'package:flutter/material.dart';
 
 void main() {
   print('=== SolarTermKit Performance Benchmark ===\n');
 
-  // Warm up
-  print('Warming up...');
-  for (int i = 0; i < 100; i++) {
-    SolarTerms.getCurrentSolarTerm(DateTime.now());
-  }
-  print('Warm up complete.\n');
-
-  // Run benchmarks
-  benchmarkGetCurrentSolarTerm();
-  benchmarkGetCurrentSeason();
-  benchmarkGetSolarTermTime();
-  benchmarkGetAllSolarTerms();
-  benchmarkSeasonColorScheme();
+  benchmarkSolarTermCreation();
+  benchmarkSolarTermRetrieval();
+  benchmarkSeasonService();
+  benchmarkAllSolarTerms();
 
   print('\n=== Benchmark Complete ===');
 }
 
-void benchmarkGetCurrentSolarTerm() {
-  print('--- Get Current Solar Term Benchmark ---');
+void benchmarkSolarTermCreation() {
+  print('--- SolarTerm Creation Benchmark ---');
 
-  final stopwatch = Stopwatch()..start();
   const iterations = 10000;
 
-  for (int i = 0; i < iterations; i++) {
-    SolarTerms.getCurrentSolarTerm(DateTime.now());
-  }
-
-  stopwatch.stop();
-  final avgTime = stopwatch.elapsedMicroseconds / iterations;
-  print(
-    '  getCurrentSolarTerm: ${avgTime.toStringAsFixed(2)} μs/op ($iterations ops)',
-  );
-  print('');
-}
-
-void benchmarkGetCurrentSeason() {
-  print('--- Get Current Season Benchmark ---');
-
+  // Benchmark minimal solar term
   final stopwatch = Stopwatch()..start();
-  const iterations = 10000;
 
   for (int i = 0; i < iterations; i++) {
-    SolarTerms.getCurrentSeason(DateTime.now());
-  }
-
-  stopwatch.stop();
-  final avgTime = stopwatch.elapsedMicroseconds / iterations;
-  print(
-    '  getCurrentSeason: ${avgTime.toStringAsFixed(2)} μs/op ($iterations ops)',
-  );
-  print('');
-}
-
-void benchmarkGetSolarTermTime() {
-  print('--- Get Solar Term Time Benchmark ---');
-
-  final years = [2024, 2025, 2026, 2027, 2028];
-
-  for (final year in years) {
-    final stopwatch = Stopwatch()..start();
-    const iterations = 10000;
-
-    for (int i = 0; i < iterations; i++) {
-      SolarTerms.getSolarTermTime(year, i % 24);
-    }
-
-    stopwatch.stop();
-    final avgTime = stopwatch.elapsedMicroseconds / iterations;
-    print(
-      '  getSolarTermTime($year): ${avgTime.toStringAsFixed(2)} μs/op ($iterations ops)',
+    SolarTerm(
+      name: '立春',
+      description: '二十四节气之首，春季开始',
+      season: Season.spring,
+      color: Colors.green.shade300,
     );
   }
+
+  stopwatch.stop();
+  final avgTime1 = stopwatch.elapsedMicroseconds / iterations;
+  print(
+    '  SolarTerm (minimal): ${avgTime1.toStringAsFixed(2)} μs/op ($iterations ops)',
+  );
+
+  // Benchmark full solar term
+  stopwatch.reset();
+  stopwatch.start();
+
+  for (int i = 0; i < iterations; i++) {
+    SolarTerm(
+      name: '立春',
+      description: '二十四节气之首，春季开始',
+      date: DateTime(2024, 2, 4),
+      season: Season.spring,
+      color: Colors.green.shade300,
+    );
+  }
+
+  stopwatch.stop();
+  final avgTime2 = stopwatch.elapsedMicroseconds / iterations;
+  print(
+    '  SolarTerm (full): ${avgTime2.toStringAsFixed(2)} μs/op ($iterations ops)',
+  );
   print('');
 }
 
-void benchmarkGetAllSolarTerms() {
-  print('--- Get All Solar Terms Benchmark ---');
+void benchmarkSolarTermRetrieval() {
+  print('--- SolarTerm Retrieval Benchmark ---');
 
+  const iterations = 100000;
+
+  // Benchmark getCurrentSolarTerm
   final stopwatch = Stopwatch()..start();
+
+  for (int i = 0; i < iterations; i++) {
+    SolarTerms.getCurrentSolarTerm();
+  }
+
+  stopwatch.stop();
+  final avgTime1 = stopwatch.elapsedMicroseconds / iterations;
+  print(
+    '  getCurrentSolarTerm(): ${avgTime1.toStringAsFixed(2)} μs/op ($iterations ops)',
+  );
+
+  // Benchmark getSolarTermByIndex
+  stopwatch.reset();
+  stopwatch.start();
+
+  for (int i = 0; i < iterations; i++) {
+    SolarTerms.getSolarTermByIndex(0);
+  }
+
+  stopwatch.stop();
+  final avgTime2 = stopwatch.elapsedMicroseconds / iterations;
+  print(
+    '  getSolarTermByIndex(0): ${avgTime2.toStringAsFixed(2)} μs/op ($iterations ops)',
+  );
+  print('');
+}
+
+void benchmarkSeasonService() {
+  print('--- SeasonService Benchmark ---');
+
+  const iterations = 100000;
+
+  // Benchmark getCurrentSeason
+  final stopwatch = Stopwatch()..start();
+
+  for (int i = 0; i < iterations; i++) {
+    SolarTerms.getCurrentSeason();
+  }
+
+  stopwatch.stop();
+  final avgTime1 = stopwatch.elapsedMicroseconds / iterations;
+  print(
+    '  getCurrentSeason(): ${avgTime1.toStringAsFixed(2)} μs/op ($iterations ops)',
+  );
+
+  // Benchmark getSeasonColor
+  stopwatch.reset();
+  stopwatch.start();
+
+  for (int i = 0; i < iterations; i++) {
+    SeasonService.getSeasonColor(Season.spring);
+  }
+
+  stopwatch.stop();
+  final avgTime2 = stopwatch.elapsedMicroseconds / iterations;
+  print(
+    '  getSeasonColor(Season.spring): ${avgTime2.toStringAsFixed(2)} μs/op ($iterations ops)',
+  );
+
+  // Benchmark getSeasonColorScheme
+  stopwatch.reset();
+  stopwatch.start();
+
+  for (int i = 0; i < iterations; i++) {
+    SeasonService.getSeasonColorScheme(Season.spring);
+  }
+
+  stopwatch.stop();
+  final avgTime3 = stopwatch.elapsedMicroseconds / iterations;
+  print(
+    '  getSeasonColorScheme(Season.spring): ${avgTime3.toStringAsFixed(2)} μs/op ($iterations ops)',
+  );
+  print('');
+}
+
+void benchmarkAllSolarTerms() {
+  print('--- All Solar Terms Benchmark ---');
+
   const iterations = 10000;
+
+  // Benchmark getting all solar terms
+  final stopwatch = Stopwatch()..start();
 
   for (int i = 0; i < iterations; i++) {
     SolarTerms.all;
   }
 
   stopwatch.stop();
-  final avgTime = stopwatch.elapsedMicroseconds / iterations;
+  final avgTime1 = stopwatch.elapsedMicroseconds / iterations;
   print(
-    '  SolarTerms.all: ${avgTime.toStringAsFixed(2)} μs/op ($iterations ops)',
+    '  SolarTerms.all: ${avgTime1.toStringAsFixed(2)} μs/op ($iterations ops)',
   );
 
-  // Benchmark iteration
+  // Benchmark getSolarTermByName
   stopwatch.reset();
   stopwatch.start();
 
-  int totalIterations = 0;
-  const outerIterations = 1000;
-
-  for (int i = 0; i < outerIterations; i++) {
-    for (final _ in SolarTerms.all) {
-      totalIterations++;
-    }
+  for (int i = 0; i < iterations; i++) {
+    SolarTerms.getSolarTermByName('立春');
   }
 
   stopwatch.stop();
-  final avgTime2 = stopwatch.elapsedMicroseconds / totalIterations;
+  final avgTime2 = stopwatch.elapsedMicroseconds / iterations;
   print(
-    '  SolarTerms.all (iteration): ${avgTime2.toStringAsFixed(2)} μs/op ($totalIterations ops)',
+    '  getSolarTermByName("立春"): ${avgTime2.toStringAsFixed(2)} μs/op ($iterations ops)',
   );
-  print('');
-}
-
-void benchmarkSeasonColorScheme() {
-  print('--- Season Color Scheme Benchmark ---');
-
-  final seasons = Season.values;
-
-  for (final season in seasons) {
-    final stopwatch = Stopwatch()..start();
-    const iterations = 10000;
-
-    for (int i = 0; i < iterations; i++) {
-      SeasonService.getSeasonColorScheme(season);
-    }
-
-    stopwatch.stop();
-    final avgTime = stopwatch.elapsedMicroseconds / iterations;
-    print(
-      '  getSeasonColorScheme($season): ${avgTime.toStringAsFixed(2)} μs/op ($iterations ops)',
-    );
-  }
-  print('');
-}
-
-void benchmarkSolarTermLookup() {
-  print('--- Solar Term Lookup Benchmark ---');
-
-  final solarTerms = SolarTerms.all;
-
-  for (final term in solarTerms) {
-    final stopwatch = Stopwatch()..start();
-    const iterations = 10000;
-
-    for (int i = 0; i < iterations; i++) {
-      SolarTerms.getSolarTermByName(term.name);
-    }
-
-    stopwatch.stop();
-    final avgTime = stopwatch.elapsedMicroseconds / iterations;
-    print(
-      '  getSolarTermByName("${term.name}"): ${avgTime.toStringAsFixed(2)} μs/op ($iterations ops)',
-    );
-  }
   print('');
 }
