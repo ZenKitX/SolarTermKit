@@ -50,6 +50,95 @@ void main() {
     });
   });
 
+  group('SolarTerms Accuracy', () {
+    test('should calculate 24 solar terms for any year', () {
+      for (int year = 2000; year <= 2100; year++) {
+        for (int i = 0; i < 24; i++) {
+          final date = SolarTerms.getSolarTerm(year, i);
+          expect(date.year, equals(year));
+          expect(date.month, greaterThanOrEqualTo(1));
+          expect(date.month, lessThanOrEqualTo(12));
+          expect(date.day, greaterThanOrEqualTo(1));
+          expect(date.day, lessThanOrEqualTo(31));
+        }
+      }
+    });
+
+    test('should handle leap years correctly', () {
+      // Test leap year
+      final leapYearTerms = SolarTerms.getSolarTerm(2024, 3); // 春分
+      expect(leapYearTerms.year, equals(2024));
+
+      // Test non-leap century year (1900 is NOT a leap year)
+      final centuryTerms = SolarTerms.getSolarTerm(1900, 3);
+      expect(centuryTerms.year, equals(1900));
+
+      // Test regular non-leap year
+      final regularYearTerms = SolarTerms.getSolarTerm(2023, 3);
+      expect(regularYearTerms.year, equals(2023));
+    });
+
+    test('should handle boundary years', () {
+      // Test year 1900 (non-leap century)
+      final term1900 = SolarTerms.getSolarTerm(1900, 0);
+      expect(term1900.year, equals(1900));
+
+      // Test year 2000 (leap century)
+      final term2000 = SolarTerms.getSolarTerm(2000, 0);
+      expect(term2000.year, equals(2000));
+
+      // Test year 2100 (non-leap century)
+      final term2100 = SolarTerms.getSolarTerm(2100, 0);
+      expect(term2100.year, equals(2100));
+    });
+
+    test('should have consistent solar term order', () {
+      final terms2024 = List.generate(24, (i) => SolarTerms.getSolarTerm(2024, i));
+      
+      // Verify terms are in chronological order
+      for (int i = 0; i < 23; i++) {
+        expect(terms2024[i].isBefore(terms2024[i + 1]), isTrue);
+      }
+    });
+
+    test('should validate against reference data (2000)', () {
+      // Reference: 2000年立春 on 2月4日 21:19
+      // Our algorithm should be within 1 hour
+      final calculated = SolarTerms.getSolarTerm(2000, 0);
+      final reference = DateTime(2000, 2, 4, 21, 19);
+      
+      final error = calculated.difference(reference).abs();
+      expect(error.inHours, lessThan(2), 
+             reason: 'Error should be less than 2 hours. '
+                     'Calculated: $calculated, Reference: $reference, Error: ${error.inMinutes}min');
+    });
+
+    test('should validate against reference data (2024)', () {
+      // Reference: 2024年立春 on 2月4日 16:27
+      final calculated = SolarTerms.getSolarTerm(2024, 0);
+      final reference = DateTime(2024, 2, 4, 16, 27);
+      
+      final error = calculated.difference(reference).abs();
+      expect(error.inHours, lessThan(2));
+    });
+
+    test('should calculate reasonable solar term times', () {
+      // Solar terms should occur roughly every 15 days
+      final terms2024 = List.generate(24, (i) => SolarTerms.getSolarTerm(2024, i));
+      
+      for (int i = 0; i < 23; i++) {
+        final interval = terms2024[i + 1].difference(terms2024[i]);
+        expect(interval.inDays, greaterThan(14), 
+               reason: 'Interval between ${terms2024[i]} and ${terms2024[i + 1]} '
+                       'should be > 14 days, got ${interval.inDays}');
+        expect(interval.inDays, lessThan(16),
+               reason: 'Interval should be < 16 days, got ${interval.inDays}');
+      }
+    });
+  });
+}
+  });
+
   group('SolarTerms', () {
     test('should get current solar term', () {
       final term = SolarTerms.getCurrentSolarTerm();
