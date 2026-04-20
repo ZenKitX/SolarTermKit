@@ -3,6 +3,8 @@
 /// Run with: dart run benchmark/solar_term_benchmark.dart
 library;
 
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:solar_term_kit/solar_term_kit.dart';
 

@@ -36,11 +36,11 @@ class HomePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildCurrentSolarTerm(),
+            _buildCurrentSolarTerm(context),
             const SizedBox(height: 24),
-            _buildSeasonInfo(),
+            _buildSeasonInfo(context),
             const SizedBox(height: 24),
-            _buildAllSolarTerms(),
+            _buildAllSolarTerms(context),
           ],
         ),
       ),
@@ -169,8 +169,8 @@ class HomePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: const [
+            const Row(
+              children: [
                 Icon(Icons.list, color: Colors.green),
                 SizedBox(width: 8),
                 Text(
