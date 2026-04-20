@@ -11,7 +11,7 @@
 /// final solarTerm = SolarTerms.getCurrentSolarTerm();
 /// final season = SolarTerms.getCurrentSeason();
 /// ```
-library solar_term_kit;
+library;
 
 export 'src/solar_terms.dart';
 export 'src/models/solar_term_model.dart';

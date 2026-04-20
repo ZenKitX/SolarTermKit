@@ -1,28 +1,31 @@
 import 'package:flutter/material.dart';
+import '../models/solar_term_model.dart';
 
 /// Season service
 class SeasonService {
+  SeasonService();
+
   /// Get current season
-  static String getCurrentSeason() {
+  static Season getCurrentSeason() {
     final now = DateTime.now();
     return _getSeasonForMonth(now.month);
   }
 
   /// Get season for a specific date
-  static String getSeasonForDate(DateTime date) {
+  static Season getSeasonForDate(DateTime date) {
     return _getSeasonForMonth(date.month);
   }
 
   /// Get season for month
-  static String _getSeasonForMonth(int month) {
+  static Season _getSeasonForMonth(int month) {
     if (month >= 3 && month <= 5) {
-      return '春';
+      return Season.spring;
     } else if (month >= 6 && month <= 8) {
-      return '夏';
+      return Season.summer;
     } else if (month >= 9 && month <= 11) {
-      return '秋';
+      return Season.autumn;
     } else {
-      return '冬';
+      return Season.winter;
     }
   }
 
@@ -47,50 +50,70 @@ class SeasonService {
   }
 
   /// Get season color (Material Color)
-  static Color getSeasonColor(String season) {
+  static Color getSeasonColor(Season season) {
     switch (season) {
-      case '春':
+      case Season.spring:
         return Colors.green.shade300;
-      case '夏':
+      case Season.summer:
         return Colors.red.shade300;
-      case '秋':
+      case Season.autumn:
         return Colors.orange.shade300;
-      case '冬':
+      case Season.winter:
         return Colors.blue.shade300;
-      default:
-        return Colors.grey;
     }
   }
 
   /// Get season color code (int)
-  static int getSeasonColorCode(String season) {
+  static int getSeasonColorCode(Season season) {
     switch (season) {
-      case '春':
+      case Season.spring:
         return 0xFF81C784; // Green 300
-      case '夏':
+      case Season.summer:
         return 0xFFE57373; // Red 300
-      case '秋':
+      case Season.autumn:
         return 0xFFFFB74D; // Orange 300
-      case '冬':
+      case Season.winter:
         return 0xFF64B5F6; // Blue 300
-      default:
-        return 0xFF9E9E9E; // Grey 500
     }
   }
 
   /// Get season description
-  static String getSeasonDescription(String season) {
+  static String getSeasonDescription(Season season) {
     switch (season) {
-      case '春':
+      case Season.spring:
         return '春回大地，万物复苏';
-      case '夏':
+      case Season.summer:
         return '夏日炎炎，绿树成荫';
-      case '秋':
+      case Season.autumn:
         return '秋高气爽，硕果累累';
-      case '冬':
+      case Season.winter:
         return '冬雪皑皑，银装素裹';
-      default:
-        return '四季轮转，岁月如歌';
+    }
+  }
+
+  /// Get season color scheme
+  static ColorScheme getSeasonColorScheme(Season season) {
+    switch (season) {
+      case Season.spring:
+        return ColorScheme.light(
+          primary: Colors.green.shade700,
+          secondary: Colors.lightGreen.shade700,
+        );
+      case Season.summer:
+        return ColorScheme.light(
+          primary: Colors.red.shade700,
+          secondary: Colors.orange.shade700,
+        );
+      case Season.autumn:
+        return ColorScheme.light(
+          primary: Colors.orange.shade700,
+          secondary: Colors.brown.shade700,
+        );
+      case Season.winter:
+        return ColorScheme.light(
+          primary: Colors.blue.shade700,
+          secondary: Colors.cyan.shade700,
+        );
     }
   }
 }

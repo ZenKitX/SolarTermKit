@@ -1,4 +1,6 @@
+import 'package:flutter/material.dart';
 import '../models/solar_term_model.dart';
+import '../services/season_service.dart';
 
 /// Solar terms calculation service
 ///
@@ -70,12 +72,55 @@ class SolarTerms {
   ];
 
   // Season for each solar term
-  static const List<String> _seasons = [
-    '春', '春', '春', '春', '春', '春',
-    '夏', '夏', '夏', '夏', '夏', '夏',
-    '秋', '秋', '秋', '秋', '秋', '秋',
-    '冬', '冬', '冬', '冬', '冬', '冬',
+  static const List<Season> _seasons = [
+    Season.spring, Season.spring, Season.spring, Season.spring, Season.spring, Season.spring,
+    Season.summer, Season.summer, Season.summer, Season.summer, Season.summer, Season.summer,
+    Season.autumn, Season.autumn, Season.autumn, Season.autumn, Season.autumn, Season.autumn,
+    Season.winter, Season.winter, Season.winter, Season.winter, Season.winter, Season.winter,
   ];
+
+  // Colors for each solar term
+  static const List<Color> _colors = [
+    Color(0xFF81C784), // Green 300
+    Color(0xFFA5D6A7), // Green 300
+    Color(0xFF66BB6A), // Green 400
+    Color(0xFF4CAF50), // Green 500
+    Color(0xFF43A047), // Green 600
+    Color(0xFF388E3C), // Green 700
+    Color(0xFFE57373), // Red 300
+    Color(0xFFEF5350), // Red 400
+    Color(0xFFF44336), // Red 500
+    Color(0xFFE53935), // Red 600
+    Color(0xFFD32F2F), // Red 700
+    Color(0xFFC62828), // Red 800
+    Color(0xFFFFB74D), // Orange 300
+    Color(0xFFFFA726), // Orange 400
+    Color(0xFFFF9800), // Orange 500
+    Color(0xFFFF8A65), // Orange 500
+    Color(0xFFF57C00), // Orange 700
+    Color(0xFFEF6C00), // Orange 800
+    Color(0xFF64B5F6), // Blue 300
+    Color(0xFF42A5F5), // Blue 400
+    Color(0xFF2196F3), // Blue 500
+    Color(0xFF1E88E5), // Blue 600
+    Color(0xFF1976D2), // Blue 700
+    Color(0xFF1565C0), // Blue 800
+  ];
+
+  /// Get all solar terms
+  static List<SolarTerm> get all {
+    final now = DateTime.now();
+    return List.generate(24, (index) {
+      final time = getSolarTermTime(now.year, index);
+      return SolarTerm(
+        name: _names[index],
+        description: _descriptions[index],
+        date: time,
+        season: _seasons[index],
+        color: _colors[index],
+      );
+    });
+  }
 
   /// Calculate solar term time for a specific year and index
   ///
@@ -109,7 +154,7 @@ class SolarTerms {
 
     return DateTime(
       targetYear,
-      baseMonth,
+      baseMonth.toInt(),
       intDay,
       hour,
       minute,
@@ -117,71 +162,72 @@ class SolarTerms {
   }
 
   /// Get current solar term
-  static String getCurrentSolarTerm() {
+  static SolarTerm getCurrentSolarTerm() {
     final now = DateTime.now();
     return getSolarTermForDate(now);
   }
 
   /// Get solar term for a specific date
-  static String getSolarTermForDate(DateTime date) {
+  static SolarTerm getSolarTermForDate(DateTime date) {
     final year = date.year;
 
     // Find the closest solar term
-    String currentSolarTerm = '';
     int minDiff = double.maxFinite.toInt();
+    int closestIndex = 0;
 
     for (int i = 0; i < 24; i++) {
       final solarTermTime = getSolarTermTime(year, i);
-      final diff = date.difference(solarTermTime).abs();
+      final diff = date.difference(solarTermTime).abs().inDays;
 
       if (diff < minDiff) {
         minDiff = diff;
-        currentSolarTerm = _names[i];
+        closestIndex = i;
       }
     }
 
-    return currentSolarTerm;
+    final time = getSolarTermTime(year, closestIndex);
+    return SolarTerm(
+      name: _names[closestIndex],
+      description: _descriptions[closestIndex],
+      date: time,
+      season: _seasons[closestIndex],
+      color: _colors[closestIndex],
+    );
   }
 
   /// Get current season
-  static String getCurrentSeason() {
-    final now = DateTime.now();
-    return getSeasonForDate(now);
+  static Season getCurrentSeason() {
+    return SeasonService.getCurrentSeason();
   }
 
   /// Get season for a specific date
-  static String getSeasonForDate(DateTime date) {
-    final month = date.month;
-
-    if (month >= 3 && month <= 5) {
-      return '春';
-    } else if (month >= 6 && month <= 8) {
-      return '夏';
-    } else if (month >= 9 && month <= 11) {
-      return '秋';
-    } else {
-      return '冬';
-    }
+  static Season getSeasonForDate(DateTime date) {
+    return SeasonService.getSeasonForDate(date);
   }
 
-  /// Get solar term description
-  static String getSolarTermDescription(String solarTerm) {
-    final index = _names.indexOf(solarTerm);
-    if (index != -1) {
-      return _descriptions[index];
-    }
-    return '二十四节气之一';
+  /// Get solar term by name
+  static SolarTerm? getSolarTermByName(String name) {
+    final index = _names.indexOf(name);
+    if (index == -1) return null;
+    
+    final now = DateTime.now();
+    final time = getSolarTermTime(now.year, index);
+    return SolarTerm(
+      name: _names[index],
+      description: _descriptions[index],
+      date: time,
+      season: _seasons[index],
+      color: _colors[index],
+    );
   }
 
   /// Check if today is a solar term day
   static bool isSolarTermDay() {
     final now = DateTime.now();
     final solarTerm = getSolarTermForDate(now);
-    final solarTermTime = getSolarTermTime(now.year, _names.indexOf(solarTerm));
-
-    return now.year == solarTermTime.year &&
-           now.month == solarTermTime.month &&
-           now.day == solarTermTime.day;
+    return now.year == solarTerm.date!.year &&
+           now.month == solarTerm.date!.month &&
+           now.day == solarTerm.date!.day;
   }
 
   /// Get all solar term names
@@ -190,20 +236,19 @@ class SolarTerms {
   }
 
   /// Get solar term by index
-  static String getSolarTermByIndex(int index) {
+  static SolarTerm getSolarTermByIndex(int index) {
     if (index >= 0 && index < 24) {
-      return _names[index];
+      final now = DateTime.now();
+      final time = getSolarTermTime(now.year, index);
+      return SolarTerm(
+        name: _names[index],
+        description: _descriptions[index],
+        date: time,
+        season: _seasons[index],
+        color: _colors[index],
+      );
     }
     throw ArgumentError('Index must be between 0 and 23');
-  }
-
-  /// Get solar term season
-  static String getSolarTermSeason(String solarTerm) {
-    final index = _names.indexOf(solarTerm);
-    if (index != -1) {
-      return _seasons[index];
-    }
-    return '';
   }
 
   /// Check if a year is a leap year
@@ -227,19 +272,5 @@ class SolarTerms {
     // If no solar term found this year, get first of next year
     final firstNextYear = getSolarTermTime(year + 1, 0);
     return firstNextYear.difference(now).inDays;
-  }
-
-  /// Get solar term with full details
-  static SolarTerm getSolarTermDetails(String solarTermName) {
-    final index = _names.indexOf(solarTermName);
-    if (index == -1) {
-      throw ArgumentError('Invalid solar term name');
-    }
-
-    return SolarTerm(
-      name: _names[index],
-      description: _descriptions[index],
-      season: _seasons[index],
-    );
   }
 }
