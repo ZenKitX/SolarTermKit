@@ -47,12 +47,12 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildCurrentSolarTerm() {
+  Widget _buildCurrentSolarTerm(BuildContext context) {
     final currentTerm = SolarTerms.getCurrentSolarTerm();
     final season = SolarTerms.getCurrentSeason();
 
     return Card(
-      color: currentTerm.color?.withOpacity(0.1) ?? Colors.grey.shade100,
+      color: currentTerm.color?.withValues(alpha: 0.1) ?? Colors.grey.shade100,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -97,7 +97,7 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildSeasonInfo() {
+  Widget _buildSeasonInfo(BuildContext context) {
     final season = SolarTerms.getCurrentSeason();
     final colorScheme = SeasonService.getSeasonColorScheme(season);
 
@@ -160,7 +160,7 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildAllSolarTerms() {
+  Widget _buildAllSolarTerms(BuildContext context) {
     final allTerms = SolarTerms.all;
 
     return Card(
@@ -195,7 +195,7 @@ class HomePage extends StatelessWidget {
                       : '-',
                 ),
               );
-            }).toList(),
+            }),
           ],
         ),
       ),

@@ -49,7 +49,8 @@ class SolarTerm {
     '立冬', '小雪', '大雪', '冬至', '小寒', '大寒',
   ];
 
-  /// Solar term descriptions
+  /// Solar term descriptions (unused in current model but kept for reference)
+  // ignore: unused_field
   static const List<String> _descriptions = [
     '立春，二十四节气之首，春季开始',
     '雨水，降雨开始，雨量渐增',
