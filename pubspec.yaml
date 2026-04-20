@@ -6,7 +6,7 @@ repository: https://github.com/ZenKitX/SolarTermKit
 issue_tracker: https://github.com/ZenKitX/SolarTermKit/issues
 
 environment:
-  sdk: ^3.11.0
+  sdk: ^3.5.0
   flutter: ">=3.24.0"
 
 dependencies:
