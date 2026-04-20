@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:SolarTermKit/SolarTermKit.dart';
+import '../../lib/src/solar_terms.dart';
+import '../../lib/src/models/solar_term_model.dart';
+import '../../lib/src/services/season_service.dart';
 
 void main() {
   runApp(const SolarTermApp());

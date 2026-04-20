@@ -3,8 +3,10 @@
 /// Run with: dart run benchmark/solar_term_benchmark.dart
 library;
 
-import 'package:SolarTermKit/SolarTermKit.dart';
 import 'package:flutter/material.dart';
+import '../lib/src/solar_terms.dart';
+import '../lib/src/models/solar_term_model.dart';
+import '../lib/src/services/season_service.dart';
 
 void main() {
   print('=== SolarTermKit Performance Benchmark ===\n');
