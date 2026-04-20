@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../models/solar_term_model.dart';
-import '../services/season_service.dart';
+import 'models/solar_term_model.dart';
+import 'services/season_service.dart';
 
 /// Solar terms calculation service
 ///
