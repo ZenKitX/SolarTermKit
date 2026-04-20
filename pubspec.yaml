@@ -1,0 +1,22 @@
+name: solar_term_kit
+description: A solar terms package for Flutter apps. Provides accurate calculation of 24 solar terms and seasons.
+version: 0.1.0
+homepage: https://github.com/ZenKitX/SolarTermKit
+repository: https://github.com/ZenKitX/SolarTermKit
+issue_tracker: https://github.com/ZenKitX/SolarTermKit/issues
+
+environment:
+  sdk: ^3.11.0
+  flutter: ">=3.24.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
