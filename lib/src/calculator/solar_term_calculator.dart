@@ -1,4 +1,5 @@
 import 'models/solar_term_model.dart';
+import 'models/solar_term_progress.dart';
 import 'services/season_service.dart';
 
 /// Solar term precision level
@@ -101,6 +102,19 @@ abstract class SolarTermCalculator {
   ///
   /// [year] - The year
   List<DateTime> getYearSolarTerms(int year);
+
+  /// Get progress within the current solar term
+  ///
+  /// [date] - Reference date (default: current time)
+  /// Returns progress information including percentage, days elapsed, etc.
+  SolarTermProgress getCurrentProgress([DateTime? date]);
+
+  /// Get the period for a specific solar term
+  ///
+  /// [termName] - Solar term name (e.g., '立春', '春分')
+  /// [year] - The year
+  /// Returns the start and end dates of the solar term period
+  SolarTermPeriod getTermPeriod(String termName, int year);
 
   /// Clear cache (if caching is enabled)
   void clearCache();
@@ -257,6 +271,63 @@ class AstronomicalCalculator implements SolarTermCalculator {
   @override
   void clearCache() {
     _cache.clear();
+  }
+
+  @override
+  SolarTermProgress getCurrentProgress([DateTime? date]) {
+    date ??= DateTime.now();
+
+    // Get current and next solar terms
+    final currentTerm = getCurrentSolarTerm(date);
+    final nextTerm = getNextSolarTerm(date);
+
+    // Get current term period
+    final period = getTermPeriod(currentTerm.name, date.year);
+
+    // Calculate progress
+    final daysIntoTerm = date.difference(period.startDate).inDays;
+    final totalDays = period.endDate.difference(period.startDate).inDays;
+    final percentage = (daysIntoTerm / totalDays) * 100.0;
+    final remainingDays = totalDays - daysIntoTerm;
+    final daysUntilNextTerm = daysIntoTerm;
+
+    return SolarTermProgress(
+      currentTerm: currentTerm,
+      nextTerm: nextTerm,
+      period: period,
+      percentage: percentage,
+      daysIntoTerm: daysIntoTerm,
+      daysUntilNextTerm: daysUntilNextTerm,
+      remainingDays: remainingDays,
+    );
+  }
+
+  @override
+  SolarTermPeriod getTermPeriod(String termName, int year) {
+    // Get term index
+    final term = getSolarTermByName(termName);
+    if (term == null) {
+      throw ArgumentError('Unknown solar term: $termName');
+    }
+
+    final index = term.index;
+
+    // Get current term date
+    final startDate = getSolarTermTime(year, index);
+
+    // Get next term date
+    final nextIndex = (index + 1) % 24;
+    int nextYear = year;
+    if (index == 23) {
+      nextYear = year + 1;
+    }
+    final endDate = getSolarTermTime(nextYear, nextIndex);
+
+    return SolarTermPeriod(
+      term: term,
+      startDate: startDate,
+      endDate: endDate,
+    );
   }
 
   // Private calculation methods
@@ -440,6 +511,14 @@ class SolarTerms {
 
   static List<DateTime> getYearSolarTerms(int year) {
     return _chinaCalculator.getYearSolarTerms(year);
+  }
+
+  static SolarTermProgress getCurrentProgress([DateTime? date]) {
+    return _chinaCalculator.getCurrentProgress(date);
+  }
+
+  static SolarTermPeriod getTermPeriod(String termName, int year) {
+    return _chinaCalculator.getTermPeriod(termName, year);
   }
 
   static void clearCache() {
