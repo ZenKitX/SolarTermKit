@@ -74,10 +74,6 @@ jobs:
       - name: Run accuracy validation
         run: dart tool/accuracy_validator.dart
 
-  build:
-    name: Build example app
-    runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
