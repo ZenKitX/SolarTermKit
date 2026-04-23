@@ -19,12 +19,5 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^6.0.0
 
-topics:
-  - solar-term
-  - chinese-calendar
-  - astronomy
-  - seasons
-  - traditional-culture
-
 flutter:
   uses-material-design: true
