@@ -1,6 +1,6 @@
 name: solar_term_kit
 description: Accurate calculation of 24 solar terms and seasons for Flutter apps. Configurable calculator with time zone support and caching.
-version: 0.1.0
+version: 0.2.0
 homepage: https://github.com/ZenKitX/SolarTermKit
 repository: https://github.com/ZenKitX/SolarTermKit
 issue_tracker: https://github.com/ZenKitX/SolarTermKit/issues
